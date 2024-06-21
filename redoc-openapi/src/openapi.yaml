@@ -8,10 +8,36 @@ servers:
   - url: https://api.example.com/v1
     description: Production server
 
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  schemas:
+    Pet:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        tag:
+          type: string
+
+security:
+  - ApiKeyAuth: []
+
 paths:
   /pets:
     get:
       summary: List all pets
+      description: Retrieve a list of all available pets.
       operationId: listPets
       tags:
         - pets
@@ -24,10 +50,13 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Pet'
+      security:
+        - ApiKeyAuth: []
 
   /pets/{petId}:
     get:
       summary: Info for a specific pet
+      description: Retrieve information about a specific pet by ID.
       operationId: getPetById
       tags:
         - pets
@@ -48,19 +77,5 @@ paths:
                 $ref: '#/components/schemas/Pet'
         '404':
           description: Pet not found
-
-components:
-  schemas:
-    Pet:
-      type: object
-      required:
-        - id
-        - name
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-        tag:
-          type: string
+      security:
+        - ApiKeyAuth: []
